@@ -6,6 +6,9 @@ def bus(n: int) -> list[int]:
 
 def fill_module(bus: list[int]):
     for i in range(len(bus)):
-        if bus[i] < 100:
+        while bus[i] < 100:
             bus[i] += 1
     return bus
+        
+
+print(fill_module(bus(5)))
