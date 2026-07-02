@@ -15,11 +15,10 @@ def bus(n: int) -> list[int]:
 #FUNCION QUE LLENA LOS MODULOS DE CARGA DEL BUS
 def fill_module(bus: list[int],i:int):
     while bus[i] < 100:
-        bus[i] += 15
+        bus[i] += 20
         if bus[i] > 100:
             bus[i] = 100
         print(f"[{threading.current_thread().name}] Bus: {bus}")
-        time.sleep(0.8)
     return bus
 
 #FUNCION QUE SIMULA EL PROCESO DE CARGA DE UN BUS PARA UN HILO
@@ -46,24 +45,24 @@ def threads_buses(num_modules, bus_id):
     )
 
 #FUNCION QUE GENERA BUSES DE FORMA CONSTANTE Y LOS AGREGA A LA COLA
-def generate_buses_cons(num_modules):
+def generate_buses_cons(num_modules,time_sleep):
     bus_id = 1
     while True:
         thread = threads_buses(num_modules, bus_id)
         bus_queue_cons.put(thread)
         print(f"[Generator] Bus-{bus_id} arrived.")
         bus_id += 1
-        time.sleep(5)  
+        time.sleep(time_sleep)  
 
 #FUNCION QUE GENERA BUSES DE FORMA MANUAL Y LOS AGREGA A LA COLA
-def generate_buses_manual(num_modules, num_buses):
+def generate_buses_manual(num_modules, num_buses, time_sleep):
     bus_id = 1
     while bus_id <= num_buses:
-        thread = threads_buses(num_modules, bus_id)
+        thread = threads_buses(num_modules, bus_id,)
         bus_queue_manual.put(thread)
         print(f"[Generator] Bus-{bus_id} arrived.")
         bus_id += 1
-        time.sleep(5)  
+        time.sleep(time_sleep)  
 
 #FUNCION QUE RECIBE LOS BUSES DE LA COLA Y LOS INICIA
 def dispatcher(bus_queue):
