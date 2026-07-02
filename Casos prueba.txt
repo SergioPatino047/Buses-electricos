@@ -1,0 +1,57 @@
+CASOS DE PRUEBA EJECUTADOS
+
+CASO 1: #Verificar que los buses esperen correctamente cuando no existen cargadores disponibles.
+BUSES: 10
+CARGADORES:3
+MODULOS: 5
+
+Resultado: 
+Nunca existan más de 3 cargas simultáneas.
+Todos los buses terminen de cargar.
+Ningún bus quede bloqueado permanentemente.
+
+CASO 2: #Evaluar el comportamiento bajo alta concurrencia.
+Buses: 100
+Cargadores: 5
+Módulos: 5
+
+Resultado:
+El sistema continúe funcionando correctamente.
+No aparezcan excepciones.
+Todos los buses finalicen.
+
+CASO 3: #Verificar que cada bus solo abandone la estación cuando todos sus módulos hayan sido cargados.
+Buses: 20
+Cargadores: 5
+Módulos: 20
+
+CASO 4: #llegada masiva
+se modifica time.sleep(5) por time.sleep(0.05)
+
+Todos los buses llegan casi simultáneamente.
+Esto fuerza una alta competencia por los cargadores.
+
+Caso 5: #Pocos cargadores- PEOR CASO
+buses: 50
+cargadores: 1
+modulos: 5
+
+Resultado:
+todos esperan
+ninguno queda bloqueado
+todos terminan
+
+caso 6: #Llegadas continuas
+se usa generate_buses_cos() durante unos minutos para
+comprobar que los buses siguen saliendo y que el sistema no deja de atender nuevos buses.
+
+ASERCIONES
+
+1. assert all(module == 100 for module in bus) 
+Ningún bus abandona la estación con módulos incompletos.
+
+2. assert 0 <= bus[i] <= 100 
+Cada módulo debe mantenerse en el rango. Así detectan errores en fill_module.
+
+3. assert len(buses) == total_modules 
+Se pone antes que el hilo termine para garantizar que el bus conserva todos sus modulos.
