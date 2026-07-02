@@ -2,19 +2,15 @@
 import threading
 import time
 
-N = 5   # buses
-K = 2   # cargadores, debe ser menor que N
-M = 3   # módulos por bus, debe ser mínimo 2
+N = 7
+K = 4
+M = 4
 
-assert N > K, "Debe cumplirse N > K"
-assert K >= 1, "Debe haber al menos 1 cargador"
-assert M >= 2, "Debe haber al menos 2 módulos para producir espera anidada"
+assert N > K
+assert K >= 1
+assert M >= 2
 
-chargers = [1] * K
-chargers_mutex = threading.Lock()
-
-# Solo los primeros K buses llegan a esta barrera,
-# porque solo ellos alcanzan a tomar un cargador.
+cargadores = threading.Semaphore(K)
 module_barrier = threading.Barrier(K)
 
 
@@ -29,49 +25,20 @@ def fill_module(bus_modules: list[int], i: int):
         time.sleep(0.2)
 
 
-def acquire_charger(chargers_list: list[int]):
-    with chargers_mutex:
-        for i in range(len(chargers_list)):
-            if chargers_list[i] == 1:
-                chargers_list[i] = 0
-                return i
-    return None
+def thread_function(bus_modules: list[int]):
+    print(f"[{threading.current_thread().name}] intenta tomar cargador para módulo 1")
+    cargadores.acquire()
+    print(f"[{threading.current_thread().name}] tomó cargador para módulo 1")
 
+    fill_module(bus_modules, 0)
 
-def thread_function(bus_modules: list[int], chargers_list: list[int]):
-    acquired_chargers = []
+    print(f"[{threading.current_thread().name}] terminó módulo 1 y retiene el cargador")
+    module_barrier.wait()
 
-    for module_index in range(len(bus_modules)):
-        charger_index = None
+    print(f"[{threading.current_thread().name}] intenta tomar OTRO cargador para módulo 2")
+    cargadores.acquire()  # Aquí queda bloqueado
 
-        while charger_index is None:
-            charger_index = acquire_charger(chargers_list)
-
-            if charger_index is None:
-                print(f"[{threading.current_thread().name}] no charger available, waiting...")
-                time.sleep(1)
-
-        acquired_chargers.append(charger_index)
-        print(f"[{threading.current_thread().name}] acquired charger {charger_index} for module {module_index + 1}")
-
-        fill_module(bus_modules, module_index)
-
-        print(f"[{threading.current_thread().name}] finished module {module_index + 1}: {bus_modules}")
-
-        if module_index == 0:
-            print(f"[{threading.current_thread().name}] keeps charger {charger_index} and waits at barrier")
-            module_barrier.wait()
-
-        # ERROR INTENCIONAL:
-        # No libera el cargador después de cargar el módulo.
-        # Intenta tomar otro cargador para el siguiente módulo.
-        # Esto produce deadlock cuando los primeros K buses retienen todos los cargadores.
-
-    print(f"[{threading.current_thread().name}] finished all modules: {bus_modules}")
-
-    for _ in acquired_chargers:
-        # En el deadlock nunca llega aquí.
-        pass
+    fill_module(bus_modules, 1)
 
 
 buses = [bus(M) for _ in range(N)]
@@ -81,7 +48,7 @@ threads = []
 for i in range(N):
     thread = threading.Thread(
         target=thread_function,
-        args=(buses[i], chargers),
+        args=(buses[i],),
         name=f"Bus-{i + 1}",
         daemon=True
     )
@@ -98,6 +65,9 @@ alive_threads = [thread.name for thread in threads if thread.is_alive()]
 if alive_threads:
     print("\nDEADLOCK DETECTADO")
     print(f"Hilos bloqueados: {alive_threads}")
-
+    print("Los primeros K buses tomaron todos los cargadores.")
+    print("Cada uno retuvo su cargador después de cargar el módulo 1.")
+    print("Luego intentaron tomar otro cargador para el módulo 2.")
+    print("Como no queda ningún cargador libre, quedan bloqueados.")
 else:
     print("\nNo se detectó deadlock.")
