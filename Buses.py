@@ -24,8 +24,6 @@ def fill_module(bus: list[int],i:int):
 #FUNCION QUE SIMULA EL PROCESO DE CARGA DE UN BUS PARA UN HILO
 def thread_function(bus):
 
-    semaphore.acquire()
-
     print(f"[{threading.current_thread().name}] started charging")
     for i in range(len(bus)):
         fill_module(bus, i)
@@ -70,7 +68,11 @@ def dispatcher(bus_queue):
     while True:
 
         thread = bus_queue.get()
+
+        semaphore.acquire()
+
         thread.start()
+
         bus_queue.task_done()
 
 #NUMERO DE CARGADORES
