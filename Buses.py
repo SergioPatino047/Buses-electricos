@@ -13,7 +13,7 @@ def bus(n: int) -> list[int]:
 def fill_module(bus: list[int],i:int):
     while bus[i] < 100:
         bus[i] += 50
-        print(bus)
+        print(f"[{threading.current_thread().name}], CURRENTBUS: {bus}")
     return bus
 
 def chargers(k: int) -> list[int]:
@@ -28,14 +28,21 @@ def thread_function(bus: list[int], chargers: list[int]):
 
     while True:
         for i in range(len(chargers)):
+
             if chargers[i] == 1:
                 chargers[i] = 0
                 print(f"[{threading.current_thread().name}] acquired charger {i}")
                 for j in range(len(bus)):
-                    fill_module(bus, j)
+                    if bus[j] != 100:
+                        fill_module(bus, j)
+                        break
                 chargers[i] = 1
                 print(f"[{threading.current_thread().name}] released charger {i}")
-                return bus
+                if all(module == 100 for module in bus):
+                    print(f"[{threading.current_thread().name}] All modules are fully charged.")
+                    return bus
+
+                
         print(f"No charger available, [{threading.current_thread().name}] is waiting...")
         time.sleep(5)
 
