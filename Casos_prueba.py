@@ -109,8 +109,6 @@ test5(bus_test)
 inicio = time.perf_counter()
 #REMPLAZAR POR CASE A MEDIR TIEMPO DE EJECUCION
 case1()
-while threading.active_count() > 2:
-    time.sleep(0.1)
 fin = time.perf_counter()
 print(f"Tiempo de ejecución: {fin - inicio:.3f} segundos")
 

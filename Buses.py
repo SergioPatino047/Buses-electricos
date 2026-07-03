@@ -90,12 +90,11 @@ bus_queue_cons = Queue()
 )
 
 dispatcher_thread_cons.start()
-generate_buses_cons(5)
+generate_buses_cons(5,0.05)
 """
 
 
 #HILO EN SEGUNDO PLANO QUE RECIBE LOS BUSES Y LOS INICIA DE FORMA MANUAL
-"""
 dispatcher_thread_manual  = threading.Thread(
     target=dispatcher,
     args=(bus_queue_manual,),
@@ -103,5 +102,4 @@ dispatcher_thread_manual  = threading.Thread(
 )
 
 dispatcher_thread_manual.start()
-generate_buses_manual(5, 3)
-"""
+generate_buses_manual(5, 3,0.05)
