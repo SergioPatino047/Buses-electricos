@@ -2,8 +2,8 @@ import threading
 import time
 
 # Número de buses, cargadores y módulos por bus
-N = 20
-K = 10
+N = 10
+K = 5
 M = 2
 
 # Validaciones del escenario
@@ -32,7 +32,7 @@ def fill_module(bus_modules: list[int], i: int):
     while bus_modules[i] < 100:
         bus_modules[i] += 20
         print(f"[{threading.current_thread().name}] CURRENT BUS: {bus_modules}")
-        time.sleep(0.2)
+        time.sleep(0.8)
 
 
 def thread_function(bus_modules: list[int]):
@@ -87,7 +87,7 @@ for thread in threads:
 
 # Espera un máximo de 10 segundos por cada hilo
 for thread in threads:
-    thread.join(timeout=10)
+    thread.join(timeout=5)
 
 # Verifica si hay hilos bloqueados
 alive_threads = [thread.name for thread in threads if thread.is_alive()]
